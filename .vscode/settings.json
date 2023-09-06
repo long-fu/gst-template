@@ -1,0 +1,7 @@
+{
+    "C_Cpp.default.compileCommands": "builddir/compile_commands.json",
+    "files.associations": {
+        "gst.h": "c",
+        "gstmyfilter.h": "c"
+    }
+}
