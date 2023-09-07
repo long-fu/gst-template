@@ -23,7 +23,8 @@ Configure and build all examples (application and plugins) as such:
 
     meson builddir
     ninja -C builddir
-
+    meson install -C builddir
+    
 See <https://mesonbuild.com/Quick-guide.html> on how to install the Meson
 build system and ninja.
 

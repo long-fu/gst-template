@@ -181,7 +181,7 @@ gst_plugin_template_transform_ip (GstBaseTransform * base, GstBuffer * outbuf)
     gst_object_sync_values (GST_OBJECT (filter), GST_BUFFER_TIMESTAMP (outbuf));
 
   if (filter->silent == FALSE)
-    g_print ("I'm plugged, therefore I'm in.\n");
+    g_print ("I'm plugged gst_plugin_template_transform_ip, therefore I'm in.\n");
 
   /* FIXME: do something interesting here.  This simply copies the source
    * to the destination. */

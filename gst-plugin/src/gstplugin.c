@@ -242,7 +242,7 @@ gst_plugin_template_chain (GstPad * pad, GstObject * parent, GstBuffer * buf)
   filter = GST_PLUGIN_TEMPLATE (parent);
 
   if (filter->silent == FALSE)
-    g_print ("I'm plugged, therefore I'm in.\n");
+    g_print ("I'm plugged gst_plugin_template_chain, therefore I'm in.\n");
 
   /* just push out the incoming buffer without touching it */
   return gst_pad_push (filter->srcpad, buf);
