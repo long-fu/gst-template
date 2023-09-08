@@ -12,6 +12,9 @@ configure_file(output : 'config.h', configuration : cdata)
 gstaudio_dep = dependency('gstreamer-audio-1.0',
     fallback: ['gst-plugins-base', 'audio_dep'])
 
+gstvideo_dep = dependency('gstreamer-video-1.0',
+    fallback: ['gst-plugins-base', 'video_dep'])
+
 # Plugin 1
 plugin_sources = [
   'src/gstplugin.c'
@@ -47,6 +50,19 @@ gstmyfilterexample = library('gstmyfilter',
   gstmyfilter_sources,
   c_args: plugin_c_args,
   dependencies : [gst_dep, gstbase_dep],
+  install : true,
+  install_dir : plugins_install_dir,
+)
+
+# The myvideofilter Plugin
+gstmyvideofilter_sources = [
+'src/gstmyvideofilter.c',
+]
+
+gstmyfilterexample = library('gstmyvideofilter',
+  gstmyvideofilter_sources,
+  c_args: plugin_c_args,
+  dependencies : [gst_dep, gstvideo_dep],
   install : true,
   install_dir : plugins_install_dir,
 )

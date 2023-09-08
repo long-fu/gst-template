@@ -60,9 +60,17 @@ struct _GstMyFilter
   GstElement element;
 
   GstPad *sinkpad, *srcpad;
+    gint                  width;
+    gint                  height;
+    gint                  image_width;
+    gint                  image_height;
 
   gboolean silent;
 };
+
+// struct _GstMyFilterClass {
+//     GstElementClass parent_class;
+// }GstTextRenderClass;
 
 G_END_DECLS
 
