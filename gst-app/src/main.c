@@ -37,7 +37,7 @@ static void on_pad_added(GstElement *bus, GstPad *pad, gpointer data)
 {
     GstElement *srcpad = (GstElement *)data;
     GstPad *sinkpad;
-  
+    g_print("run ... pad\n");
     sinkpad = gst_element_get_static_pad(srcpad, "sink");
     gst_pad_link(pad, sinkpad);
     gst_object_unref(sinkpad);
@@ -48,7 +48,7 @@ static void on_pad_added(GstElement *bus, GstPad *pad, gpointer data)
 int main(int argc, char *argv[])
 {
     GMainLoop *loop;
-    GstElement *pipeline, *source, *demuxer, *decoder, *videoconv, *sink;
+    GstElement *pipeline, *source, *demuxer, *decoder, *videoconv, *sink, *filter;
     GstBus *bus;
     guint bus_id;
 
@@ -66,6 +66,7 @@ int main(int argc, char *argv[])
     demuxer     = gst_element_factory_make("qtdemux",      "qt-demuxer");
     decoder     = gst_element_factory_make("avdec_h264",   "h264-decoder");
     videoconv   = gst_element_factory_make("videoconvert", "converter");
+    filter   = gst_element_factory_make("my_filter", "my_filter");
     sink        = gst_element_factory_make("autovideosink",  "video-output");
 
     if (!pipeline || !source || !demuxer || !decoder || !videoconv || !sink) {
@@ -84,10 +85,10 @@ int main(int argc, char *argv[])
     bus_id = gst_bus_add_watch(bus, bus_callback, loop);
     gst_object_unref(bus);
 
-    gst_bin_add_many(GST_BIN(pipeline), source, demuxer, decoder, videoconv, sink, NULL);
+    gst_bin_add_many(GST_BIN(pipeline), source, demuxer, decoder, videoconv,filter, sink, NULL);
 
     gst_element_link(source, demuxer);
-    gst_element_link_many(decoder, videoconv, sink, NULL);
+    gst_element_link_many(decoder, videoconv,filter, sink, NULL);
     g_signal_connect(demuxer, "pad-added", G_CALLBACK(on_pad_added), decoder);
 
     gst_element_set_state(pipeline, GST_STATE_PLAYING);

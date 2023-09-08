@@ -64,6 +64,9 @@
 
 #include "gstmyfilter.h"
 
+#include <sys/types.h>
+#include <stdio.h>
+#include <stdlib.h>
 GST_DEBUG_CATEGORY_STATIC (gst_my_filter_debug);
 #define GST_CAT_DEFAULT gst_my_filter_debug
 
@@ -151,15 +154,19 @@ static void
 gst_my_filter_init (GstMyFilter * filter)
 {
   filter->sinkpad = gst_pad_new_from_static_template (&sink_factory, "sink");
+
   gst_pad_set_event_function (filter->sinkpad,
       GST_DEBUG_FUNCPTR (gst_my_filter_sink_event));
   gst_pad_set_chain_function (filter->sinkpad,
       GST_DEBUG_FUNCPTR (gst_my_filter_chain));
   GST_PAD_SET_PROXY_CAPS (filter->sinkpad);
+  
   gst_element_add_pad (GST_ELEMENT (filter), filter->sinkpad);
 
   filter->srcpad = gst_pad_new_from_static_template (&src_factory, "src");
+  
   GST_PAD_SET_PROXY_CAPS (filter->srcpad);
+
   gst_element_add_pad (GST_ELEMENT (filter), filter->srcpad);
 
   filter->silent = FALSE;
@@ -211,6 +218,8 @@ gst_my_filter_sink_event (GstPad * pad, GstObject * parent,
 
   GST_LOG_OBJECT (filter, "Received %s event: %" GST_PTR_FORMAT,
       GST_EVENT_TYPE_NAME (event), event);
+  
+  g_print("Received %d event \n", GST_EVENT_TYPE (event));
 
   switch (GST_EVENT_TYPE (event)) {
     case GST_EVENT_CAPS:
@@ -219,6 +228,7 @@ gst_my_filter_sink_event (GstPad * pad, GstObject * parent,
 
       gst_event_parse_caps (event, &caps);
       /* do something with the caps */
+      // 保存没一帧数据
 
       /* and forward */
       ret = gst_pad_event_default (pad, parent, event);
@@ -238,16 +248,57 @@ static GstFlowReturn
 gst_my_filter_chain (GstPad * pad, GstObject * parent, GstBuffer * buf)
 {
   GstMyFilter *filter;
-
+  GstMapInfo info;
+  guint8 *data;
+  gsize size;
+  void *file_data;
+  static int index = 0;
   filter = GST_MYFILTER (parent);
+  // g_print("buff %d/%ld\n",buf->dts, buf->duration);
+  if (filter->silent == FALSE) {
+    // g_print ("I'm plugged gst_my_filter_chain, therefore I'm in.\n");
+    size = gst_buffer_get_size (buf);
 
-  if (filter->silent == FALSE)
-    g_print ("I'm plugged gst_my_filter_chain, therefore I'm in.\n");
+    g_print ("Have data of size %" G_GSIZE_FORMAT" bytes!\n", size);
+    if(!gst_buffer_map (buf, &info, GST_MAP_READ)) {
+      // GST_ELEMENT_ERROR (decoder, STREAM, DECODE,
+      //       ("Failed to map codec data"), (NULL));
+      
+      g_print("read mem Failed\n");
+      return ;
+    }
+    data = info.data;
+    file_data = malloc(size);
+    memcpy(file_data,data,size);
+    char file_name[64] = {0x0};
+    sprintf(file_name,"/home/haoshuai/code/gst/gst-template/data/bin_%d.yuv",index);
+    save_file(file_name,file_data,size);
+    index++;
+    // gst_buffer_get_all_memory(buf);
+    // p((GstMemorySystem *)((GstBufferImpl *)buf)->mem[0])->data
+    // gst_memory_get
+    // 进行解析
+
+  }
+    
 
   /* just push out the incoming buffer without touching it */
   return gst_pad_push (filter->srcpad, buf);
 }
 
+void save_file(char *file, void*file_data,gsize size) {
+    FILE *outFileFp = fopen(file, "wb+");
+    if (outFileFp == NULL)
+    {
+        // ERROR_LOG("Save file %s failed for open error", file);
+        g_print("Save file %s failed for open error\n",file);
+        return;
+    }
+    fwrite(file_data, 1, size, outFileFp);
+
+    fflush(outFileFp);
+    fclose(outFileFp);
+}
 
 /* entry point to initialize the plug-in
  * initialize the plug-in itself

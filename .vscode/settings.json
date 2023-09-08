@@ -2,6 +2,18 @@
     "C_Cpp.default.compileCommands": "builddir/compile_commands.json",
     "files.associations": {
         "gst.h": "c",
-        "gstmyfilter.h": "c"
+        "gstmyfilter.h": "c",
+        "*.tcc": "c",
+        "algorithm": "c",
+        "random": "c",
+        "fstream": "c",
+        "istream": "c",
+        "ostream": "c",
+        "utility": "c",
+        "array": "c",
+        "string": "c",
+        "string_view": "c",
+        "cstdio": "c",
+        "stdio.h": "c"
     }
 }
