@@ -83,6 +83,14 @@ enum
   PROP_SILENT
 };
 
+/* FIXME: add/remove formats you can handle */
+#define VIDEO_SRC_CAPS \
+    GST_VIDEO_CAPS_MAKE("{ I420, Y444, Y42B, UYVY, RGBA }")
+
+/* FIXME: add/remove formats you can handle */
+#define VIDEO_SINK_CAPS \
+    GST_VIDEO_CAPS_MAKE("{ I420, Y444, Y42B, UYVY, RGBA }")
+
 /* the capabilities of the inputs and outputs.
  *
  * describe the real formats here.
@@ -218,7 +226,7 @@ gst_my_filter_sink_event(GstPad *pad, GstObject *parent,
 
   GST_LOG_OBJECT(filter, "Received %s event: %" GST_PTR_FORMAT,
                  GST_EVENT_TYPE_NAME(event), event);
-
+  // pad->
   g_print("Received %d event \n", GST_EVENT_TYPE(event));
 
   switch (GST_EVENT_TYPE(event))
@@ -249,7 +257,7 @@ typedef __uint64_t uint64_t;
 
 typedef struct _YUVColor
 {
-      uint8_t y;
+    uint8_t y;
     uint8_t u;
     uint8_t v;
 }YUVColor;
@@ -364,7 +372,9 @@ gst_my_filter_chain(GstPad *pad, GstObject *parent, GstBuffer *inbuf)
     size = map.size;
 
     gst_buffer_unmap(inbuf, &map);
+// 89.914,-42.849,70.235
 
+// 摘自: https://color.d777.com/yuv-89.914_-42.849_70.235
     // gsize temp_size = gst_buffer_get_size(inbuf); temp_size == size
     // g_print ("Have data of size %" G_GSIZE_FORMAT" / %" G_GSIZE_FORMAT" bytes!\n", size, temp_size);
     outbuf = gst_buffer_new_and_alloc(size);
@@ -375,8 +385,8 @@ gst_my_filter_chain(GstPad *pad, GstObject *parent, GstBuffer *inbuf)
     YUVColor color;
     color.u = 0;
     color.v = 0;
-    color.y = 0xff;
-    draw_rect(map.data,1280,720,20,20,100,100,color,3);
+    color.y = 255;
+    draw_rect(map.data,1280,720,20,20,1260,700,color,5);
     // data = map.data;
     // size = map.size;
     gst_buffer_unmap(outbuf, &map);
