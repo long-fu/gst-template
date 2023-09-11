@@ -85,11 +85,11 @@ enum
 
 /* FIXME: add/remove formats you can handle */
 #define VIDEO_SRC_CAPS \
-    GST_VIDEO_CAPS_MAKE("{ I420, Y444, Y42B, UYVY, RGBA }")
+  GST_VIDEO_CAPS_MAKE("{ I420, Y444, Y42B, UYVY, RGBA }")
 
 /* FIXME: add/remove formats you can handle */
 #define VIDEO_SINK_CAPS \
-    GST_VIDEO_CAPS_MAKE("{ I420, Y444, Y42B, UYVY, RGBA }")
+  GST_VIDEO_CAPS_MAKE("{ I420, Y444, Y42B, UYVY, RGBA }")
 
 /* the capabilities of the inputs and outputs.
  *
@@ -257,101 +257,99 @@ typedef __uint64_t uint64_t;
 
 typedef struct _YUVColor
 {
-    uint8_t y;
-    int8_t u;
-    int8_t v;
-}YUVColor;
+  uint8_t y;
+  int8_t u;
+  int8_t v;
+} YUVColor;
 
-
-void SetPixel(uint8_t *image_data,int image_width,int image_height, int x, int y, const YUVColor color)
+void SetPixel(uint8_t *image_data, int image_width, int image_height, int x, int y, const YUVColor color)
 {
-    // *(image_data + y * image_width + x) = color.y;
-    int ty = image_width*y + x;
-    *(image_data + ty) = color.y;
-    // uint8_t *uv_offset = image_data + image_width * image_height + (y / 2) * image_width + x / 2 * 2;
-    int u = image_width*image_height*5/4 + (y/2 * image_width/2 + x/2);
-    *(image_data + u) = color.u;
-  int v = image_width*image_height + (y/2 * image_width/2 + x/2);
+  // *(image_data + y * image_width + x) = color.y;
+  int ty = image_width * y + x;
+  *(image_data + ty) = color.y;
+  // uint8_t *uv_offset = image_data + image_width * image_height + (y / 2) * image_width + x / 2 * 2;
+  int u = image_width * image_height * 5 / 4 + (y / 2 * image_width / 2 + x / 2);
+  *(image_data + u) = color.u;
+  int v = image_width * image_height + (y / 2 * image_width / 2 + x / 2);
   *(image_data + v) = color.v;
-    // uv_offset[0] = color.u;
-    // uv_offset[1] = color.v;
+  // uv_offset[0] = color.u;
+  // uv_offset[1] = color.v;
 }
 
-void draw_rect(uint8_t *image_data, int image_width,int image_height,int x1, int y1, int x2, int y2, const YUVColor color,
-              int lineWidth)
+void draw_rect(uint8_t *image_data, int image_width, int image_height, int x1, int y1, int x2, int y2, const YUVColor color,
+               int lineWidth)
 {
-    if (x1 > x2)
+  if (x1 > x2)
+  {
+    // swap(x1, x2);
+    int tmp = x1;
+    x1 = x2;
+    x2 = tmp;
+  }
+
+  if (y1 > y2)
+  {
+    int tmp = y1;
+    y1 = y2;
+    y2 = tmp;
+    // swap(y1, y2);
+  }
+
+  int i, j;
+  int iBound, jBound;
+  int iStart, jStart;
+  int width = (int)image_width;
+  int height = (int)image_height;
+
+  jBound = MIN(height, y1 + lineWidth);
+  iBound = MIN(width - 1, x2);
+
+  for (j = y1; j < jBound; ++j)
+  {
+    for (i = x1; i <= iBound; ++i)
     {
-        // swap(x1, x2);
-        int tmp = x1;
-        x1 = x2;
-        x2 = tmp;
-
+      SetPixel(image_data, image_width, image_height, i, j, color);
     }
+  }
 
-    if (y1 > y2)
-    {
-      int tmp = y1;
-      y1 = y2;
-      y2 = tmp;
-        // swap(y1, y2);
-    }
+  jStart = MAX(0, y2 - lineWidth + 1);
+  jBound = MIN(height - 1, y2);
 
-    int i, j;
-    int iBound, jBound;
-    int iStart, jStart;
-    int width = (int)image_width;
-    int height = (int)image_height;
+  iStart = MAX(0, x1);
+  iBound = MIN(width - 1, x2);
 
-    jBound = MIN(height, y1 + lineWidth);
-    iBound = MIN(width - 1, x2);
-
-    for (j = y1; j < jBound; ++j)
-    {
-        for (i = x1; i <= iBound; ++i)
-        {
-            SetPixel(image_data,image_width,image_height, i, j, color);
-        }
-    }
-
-    jStart = MAX(0, y2 - lineWidth + 1);
-    jBound = MIN(height - 1, y2);
-
-    iStart = MAX(0, x1);
-    iBound = MIN(width - 1, x2);
-
-    for (j = jStart; j <= jBound; ++j)
-    {
-        for (i = iStart; i <= iBound; ++i)
-        {
-            SetPixel(image_data,image_width,image_height, i, j, color);
-        }
-    }
-
-    iBound = MIN(width, x1 + lineWidth);
-    jBound = MIN(height - 1, y2);
-
-    for (i = x1; i < iBound; ++i)
-    {
-        for (j = y1; j <= jBound; ++j)
-        {
-            SetPixel(image_data,image_width,image_height, i, j, color);
-        }
-    }
-
-    iStart = MAX(0, (x2 - lineWidth + 1));
-    iBound = MIN(width - 1, x2);
-
-    jStart = MAX(0, y1);
-    jBound = MIN(height - 1, y2);
-
+  for (j = jStart; j <= jBound; ++j)
+  {
     for (i = iStart; i <= iBound; ++i)
     {
-        for (j = jStart; j <= jBound; ++j)
-        {
-            SetPixel(image_data,image_width,image_height, i, j, color);
-        }
+      SetPixel(image_data, image_width, image_height, i, j, color);
     }
+  }
+
+  iBound = MIN(width, x1 + lineWidth);
+  jBound = MIN(height - 1, y2);
+
+  for (i = x1; i < iBound; ++i)
+  {
+    for (j = y1; j <= jBound; ++j)
+    {
+      SetPixel(image_data, image_width, image_height, i, j, color);
+    }
+  }
+
+  iStart = MAX(0, (x2 - lineWidth + 1));
+  iBound = MIN(width - 1, x2);
+
+  jStart = MAX(0, y1);
+  jBound = MIN(height - 1, y2);
+
+  for (i = iStart; i <= iBound; ++i)
+  {
+    for (j = jStart; j <= jBound; ++j)
+    {
+      SetPixel(image_data, image_width, image_height, i, j, color);
+    }
+  }
 }
 
 /* chain function
@@ -388,11 +386,16 @@ gst_my_filter_chain(GstPad *pad, GstObject *parent, GstBuffer *inbuf)
     memcpy(map.data, data, size);
     YUVColor color;
     // 41.92,-4.891,75.492
+    // 推理
+
+    // 推理结果
+
+    // 绘制结果
 
     color.u = -5;
     color.v = 76;
     color.y = 42;
-    draw_rect(map.data,1280,720,20,20,1260,700,color,5);
+    draw_rect(map.data, 1280, 720, 20, 20, 1260, 700, color, 5);
     // data = map.data;
     // size = map.size;
     gst_buffer_unmap(outbuf, &map);
@@ -406,7 +409,6 @@ gst_my_filter_chain(GstPad *pad, GstObject *parent, GstBuffer *inbuf)
     //   }
     //   // data是视频帧的每一帧数据
 
-
     // file_data = malloc(size);
     // memcpy(file_data,data,size);
     // char file_name[64] = {0x0};
@@ -414,7 +416,6 @@ gst_my_filter_chain(GstPad *pad, GstObject *parent, GstBuffer *inbuf)
     // save_file(file_name,file_data,size);
     // free(file_data);
     //   index++;
-
   }
 
   /* just push out the incoming buffer without touching it */
