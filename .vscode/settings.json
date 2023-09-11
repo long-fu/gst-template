@@ -26,6 +26,10 @@
         "streambuf": "c",
         "thread": "c",
         "type_traits": "c",
-        "condition_variable": "c"
+        "condition_variable": "c",
+        "map": "c",
+        "initializer_list": "c",
+        "video-frame.h": "c",
+        "types.h": "c"
     }
 }

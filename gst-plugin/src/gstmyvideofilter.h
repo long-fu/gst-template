@@ -23,6 +23,22 @@
 #include <gst/video/video.h>
 #include <gst/video/gstvideofilter.h>
 
+// GObject
+//  +----GInitiallyUnowned
+//        +----GstObject
+//              +----GstElement
+//                    +----GstBaseTransform
+//                          +----GstVideoFilter
+//                                +----GstMyVideoFilter
+
+// GObject
+//  +----GInitiallyUnowned
+//        +----GstObject
+//              +----GstElement
+//                    +----GstBaseTransform
+//                          +----GstVideoFilter
+//                                +----GstVideoConvert
+
 G_BEGIN_DECLS
 
 #define GST_TYPE_MYVIDEOFILTER   (gst_myvideofilter_get_type())
@@ -37,7 +53,7 @@ typedef struct _GstMyVideoFilterClass GstMyVideoFilterClass;
 struct _GstMyVideoFilter
 {
   GstVideoFilter base_myvideofilter;
-
+  GstVideoConverter *convert;
 };
 
 struct _GstMyVideoFilterClass

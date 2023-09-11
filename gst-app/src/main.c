@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
     demuxer     = gst_element_factory_make("qtdemux",      "qt-demuxer");
     decoder     = gst_element_factory_make("avdec_h264",   "h264-decoder");
     videoconv   = gst_element_factory_make("videoconvert", "converter");
-    filter   = gst_element_factory_make("my_filter", "my_filter");
+    filter   = gst_element_factory_make("myvideofilter", "my_filter");
     sink        = gst_element_factory_make("autovideosink",  "video-output");
 
     if (!pipeline || !source || !demuxer || !decoder || !videoconv || !sink) {

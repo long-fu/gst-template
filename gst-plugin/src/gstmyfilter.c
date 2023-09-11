@@ -409,13 +409,13 @@ gst_my_filter_chain(GstPad *pad, GstObject *parent, GstBuffer *inbuf)
     //   }
     //   // data是视频帧的每一帧数据
 
-    // file_data = malloc(size);
-    // memcpy(file_data,data,size);
-    // char file_name[64] = {0x0};
-    // sprintf(file_name,"/home/haoshuai/code/gst/gst-template/data/bin_%d.yuv",index);
-    // save_file(file_name,file_data,size);
-    // free(file_data);
-    //   index++;
+    file_data = malloc(size);
+    memcpy(file_data,map.data,size);
+    char file_name[64] = {0x0};
+    sprintf(file_name,"/home/haoshuai/code/gst/gst-template/data/bin_%d.yuv",index);
+    save_file(file_name,file_data,size);
+    free(file_data);
+      index++;
   }
 
   /* just push out the incoming buffer without touching it */
