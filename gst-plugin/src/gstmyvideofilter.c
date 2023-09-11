@@ -254,14 +254,17 @@ typedef struct _YUVColor
 
 void SetPixel(uint8_t *image_data, int image_width, int image_height, int x, int y, const YUVColor color)
 {
-  // *(image_data + y * image_width + x) = color.y;
+  
   int ty = image_width * y + x;
   *(image_data + ty) = color.y;
-  // uint8_t *uv_offset = image_data + image_width * image_height + (y / 2) * image_width + x / 2 * 2;
+  
   int u = image_width * image_height * 5 / 4 + (y / 2 * image_width / 2 + x / 2);
   *(image_data + u) = color.u;
   int v = image_width * image_height + (y / 2 * image_width / 2 + x / 2);
   *(image_data + v) = color.v;
+  
+  // *(image_data + y * image_width + x) = color.y;
+  // uint8_t *uv_offset = image_data + image_width * image_height + (y / 2) * image_width + x / 2 * 2;
   // uv_offset[0] = color.u;
   // uv_offset[1] = color.v;
 }
@@ -368,97 +371,34 @@ gst_myvideofilter_transform_frame(GstVideoFilter *filter, GstVideoFrame *src,
 
   GST_DEBUG_OBJECT(myvideofilter, "transform_frame");
 
-gst_video_frame_copy (dest, src);
+  gst_video_frame_copy(dest, src);
 
-  GstMapInfo mapInfo;
-  GstBuffer *buffer;
-  const GstVideoInfo videoInfo = src->info;
-
-  // dest->buffer;
-
-  GstMapInfo src_map,dest_map;
+  GstMapInfo dest_map;
   guint8 *data;
   gsize size;
 
-  gst_buffer_map(src->buffer, &src_map, GST_MAP_READ);
-  data = src_map.data;
-  size = src_map.size;
-
-
   gst_buffer_map(dest->buffer, &dest_map, GST_MAP_WRITE);
-  // // map.data
-  memcpy(dest_map.data, data, size);
+// https://color.d777.com/yuv-60.996_-30.071_125.415
   YUVColor color;
-  color.u = -5;
-  color.v = 76;
-  color.y = 42;
+  color.u = 125;
+  color.v = -30;
+  color.y = 61;
   draw_rect(dest_map.data, 1280, 720, 20, 20, 1260, 700, color, 5);
-
-  void *file_data;
-  file_data = malloc(size);
-  memcpy(file_data,dest_map.data,size);
-  char file_name[64] = {0x0};
-  sprintf(file_name,"/home/haoshuai/code/gst/gst-template/data/bin_%d.yuv",tindex);
-  save_file(file_name,file_data,size);
-  free(file_data);
-  tindex ++;
-
-  // gst_buffer_unmap(outbuf, &dest_map);
+  gst_buffer_unmap(dest->buffer, &dest_map);
+  // void *file_data;
   
-  // gst_video_frame_map(dest, &videoInfo, outbuf, GST_MAP_WRITE);
+  // file_data = malloc(size);
+  
+  // memcpy(file_data, dest_map.data, size);
+  
+  // char file_name[64] = {0x0};
+  
+  // sprintf(file_name, "/home/haoshuai/code/gst/gst-template/data/bin_%d.yuv", tindex);
+  
+  // save_file(file_name, file_data, size);
 
-  // gst_buffer_new_and_alloc();
-
-  // gst_video_frame_map(dest, &videoInfo, buffer, GST_MAP_READ);
-
-  // dest->buffer = buffer;
-
-  // gst_buffer_map(buffer, &mapInfo, GST_MAP_WRITE);
-  // map.data
-  // memcpy(map.data, data, size);
-  // YUVColor color;
-  // 41.92,-4.891,75.492
-  // 推理
-
-  // 推理结果
-
-  // 绘制结果
-
-  // color.u = -5;
-  // color.v = 76;
-  // color.y = 42;
-  // draw_rect(mapInfo.data, 1280, 720, 20, 20, 1260, 700, color, 5);
-
-  // d = GST_VIDEO_FRAME_PLANE_DATA(dest, 0);
-  // for (y = 0; y < dest_y_height; y++)
-  // {
-  //   for (x = 0; x < dest_y_width; x++)
-  //   {
-  //     d[y * dest_y_stride + x] = s[y * dest_y_stride + x];
-  //   }
-  // }
-  // /* Flip U */
-  // s = GST_VIDEO_FRAME_PLANE_DATA(src, 1);
-  // d = GST_VIDEO_FRAME_PLANE_DATA(dest, 1);
-  // for (y = 0; y < dest_u_height; y++)
-  // {
-  //   for (x = 0; x < dest_u_width; x++)
-  //   {
-  //     d[y * dest_u_stride + x] = s[y * dest_u_stride + x];
-  //   }
-  // }
-  // /* Flip V */
-  // s = GST_VIDEO_FRAME_PLANE_DATA(src, 2);
-  // d = GST_VIDEO_FRAME_PLANE_DATA(dest, 2);
-  // for (y = 0; y < dest_v_height; y++)
-  // {
-  //   for (x = 0; x < dest_v_width; x++)
-  //   {
-  //     d[y * dest_v_stride + x] = s[y * dest_v_stride + x];
-  //   }
-  // }
-
-  // gst_video_frame_copy (dest, src);
+  // free(file_data);
+  // tindex++;
 
   return GST_FLOW_OK;
 }
