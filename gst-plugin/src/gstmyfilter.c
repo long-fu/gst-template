@@ -378,9 +378,7 @@ gst_my_filter_chain(GstPad *pad, GstObject *parent, GstBuffer *inbuf)
     size = map.size;
 
     gst_buffer_unmap(inbuf, &map);
-// 89.914,-42.849,70.235
 
-// 摘自: https://color.d777.com/yuv-89.914_-42.849_70.235
     // gsize temp_size = gst_buffer_get_size(inbuf); temp_size == size
     // g_print ("Have data of size %" G_GSIZE_FORMAT" / %" G_GSIZE_FORMAT" bytes!\n", size, temp_size);
     outbuf = gst_buffer_new_and_alloc(size);
