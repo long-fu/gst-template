@@ -258,17 +258,23 @@ typedef __uint64_t uint64_t;
 typedef struct _YUVColor
 {
     uint8_t y;
-    uint8_t u;
-    uint8_t v;
+    int8_t u;
+    int8_t v;
 }YUVColor;
 
 
 void SetPixel(uint8_t *image_data,int image_width,int image_height, int x, int y, const YUVColor color)
 {
-    *(image_data + y * image_width + x) = color.y;
-    uint8_t *uv_offset = image_data + image_width * image_height + (y / 2) * image_width + x / 2 * 2;
-    uv_offset[0] = color.u;
-    uv_offset[1] = color.v;
+    // *(image_data + y * image_width + x) = color.y;
+    int ty = image_width*y + x;
+    *(image_data + ty) = color.y;
+    // uint8_t *uv_offset = image_data + image_width * image_height + (y / 2) * image_width + x / 2 * 2;
+    int u = image_width*image_height*5/4 + (y/2 * image_width/2 + x/2);
+    *(image_data + u) = color.u;
+  int v = image_width*image_height + (y/2 * image_width/2 + x/2);
+  *(image_data + v) = color.v;
+    // uv_offset[0] = color.u;
+    // uv_offset[1] = color.v;
 }
 
 void draw_rect(uint8_t *image_data, int image_width,int image_height,int x1, int y1, int x2, int y2, const YUVColor color,
@@ -383,9 +389,11 @@ gst_my_filter_chain(GstPad *pad, GstObject *parent, GstBuffer *inbuf)
     // map.data
     memcpy(map.data, data, size);
     YUVColor color;
-    color.u = 0;
-    color.v = 0;
-    color.y = 255;
+    // 41.92,-4.891,75.492
+
+    color.u = -5;
+    color.v = 76;
+    color.y = 42;
     draw_rect(map.data,1280,720,20,20,1260,700,color,5);
     // data = map.data;
     // size = map.size;
